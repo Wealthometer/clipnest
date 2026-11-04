@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "What ClipNest's windows may do: listen for events from the app. Everything else goes through ClipNest's own commands.",
+  "windows": ["main", "quick"],
+  "permissions": ["core:default"]
+}

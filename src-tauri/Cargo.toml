@@ -1,0 +1,51 @@
+[package]
+name = "clipnest"
+version = "1.0.0"
+description = "ClipNest: a clipboard manager that remembers what you copy"
+authors = ["Wealth Hajoh <wealthhajoh87@gmail.com>"]
+license = "MIT"
+edition = "2021"
+rust-version = "1.80"
+
+[lib]
+name = "clipnest_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-autostart = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.32", features = ["bundled"] }
+arboard = { version = "3", features = ["image-data", "wayland-data-control"] }
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
+sha2 = "0.10"
+argon2 = "0.5"
+chacha20poly1305 = "0.10"
+rand = "0.8"
+base64 = "0.22"
+regex = "1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+enigo = "0.2"
+thiserror = "1"
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true
+panic = "abort"
+
+[lints.rust]
+# `clipnest_check_win` lets the Windows-only code be type-checked on other systems:
+# RUSTFLAGS="--cfg clipnest_check_win" cargo check
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(clipnest_check_win)"] }

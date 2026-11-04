@@ -1,0 +1,56 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "ClipNest",
+  "version": "1.0.0",
+  "identifier": "com.clipnest.app",
+  "build": {
+    "beforeDevCommand": "npm run dev:web",
+    "devUrl": "http://localhost:5174",
+    "beforeBuildCommand": "npm run build:web",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "main",
+        "title": "ClipNest",
+        "url": "index.html",
+        "width": 1180,
+        "height": 760,
+        "minWidth": 860,
+        "minHeight": 560,
+        "visible": false,
+        "center": true
+      },
+      {
+        "label": "quick",
+        "title": "ClipNest quick paste",
+        "url": "index.html?window=quick",
+        "width": 720,
+        "height": 480,
+        "resizable": false,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": false,
+        "center": true,
+        "shadow": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self'; connect-src ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Productivity",
+    "shortDescription": "Clipboard history you can search",
+    "longDescription": "ClipNest remembers what you copy: text, links, code and pictures. Search everything from the last few days, pin and file what matters, keep snippets, and paste from a keyboard popup.",
+    "copyright": "Copyright © 2026 Wealth Hajoh",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+    "windows": { "nsis": { "installMode": "currentUser" } },
+    "linux": { "deb": { "depends": ["xdotool"] } }
+  }
+}

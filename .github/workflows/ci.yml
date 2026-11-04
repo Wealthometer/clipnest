@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  LINUX_DEPS: libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libxdo-dev patchelf
+
+jobs:
+  web:
+    name: Typecheck, lint, unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+
+  rust:
+    name: Rust tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: src-tauri }
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y $LINUX_DEPS
+      - run: npm ci && npm run build:web
+      - run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
+      - run: cargo test --manifest-path src-tauri/Cargo.toml
+
+  e2e:
+    name: App journeys (real app, tauri-driver, Xvfb)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: src-tauri }
+      - run: sudo apt-get update && sudo apt-get install -y $LINUX_DEPS webkit2gtk-driver xclip xvfb
+      - run: cargo install tauri-driver --locked
+      - run: npm ci
+      - run: npx tauri build --debug --no-bundle
+      - run: xvfb-run -a -s "-screen 0 1600x1000x24" npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: e2e-screenshots, path: e2e/shots }
+
+  release:
+    name: Installers (${{ matrix.os }})
+    needs: [web, rust, e2e]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-22.04]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: dtolnay/rust-toolchain@stable
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y $LINUX_DEPS
+      - run: npm ci
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: ClipNest ${{ github.ref_name }}
+          releaseDraft: true

@@ -1,0 +1,45 @@
+{
+  "name": "clipnest",
+  "version": "1.0.0",
+  "description": "ClipNest: a clipboard manager that remembers what you copy. Tauri + React + Rust + SQLite.",
+  "scripts": {
+    "dev": "tauri dev",
+    "dev:web": "vite --port 5174 --strictPort",
+    "build:web": "tsc --noEmit && vite build",
+    "build": "tauri build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "node --experimental-strip-types --no-warnings --test test/*.test.ts",
+    "test:rust": "cargo test --manifest-path src-tauri/Cargo.toml",
+    "test:e2e": "node e2e/run.mjs"
+  },
+  "author": "Wealth Hajoh <wealthhajoh87@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@tauri-apps/api": "^2.12.4",
+    "lucide-react": "^1.59.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@tauri-apps/cli": "^2.12.3",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^16.5.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "vite": "^8.3.4"
+  },
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  }
+}
