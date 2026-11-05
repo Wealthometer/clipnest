@@ -533,6 +533,12 @@ pub fn run() {
             let settings = store.settings();
             app.manage(App { store: Mutex::new(store), settings: Mutex::new(settings.clone()), ignore: Mutex::new(None) });
 
+            // The windows are declared with `"create": false` and only built now: a window created
+            // before `manage` can call commands before the state exists and stay blank.
+            for config in app.config().app.windows.clone() {
+                tauri::WebviewWindowBuilder::from_config(&handle, &config)?.build()?;
+            }
+
             if let Err(e) = register_shortcut(&handle, &settings.shortcut) {
                 eprintln!("{e}");
             }

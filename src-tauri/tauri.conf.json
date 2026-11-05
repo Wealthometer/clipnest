@@ -14,6 +14,7 @@
     "windows": [
       {
         "label": "main",
+        "create": false,
         "title": "ClipNest",
         "url": "index.html",
         "width": 1180,
@@ -25,6 +26,7 @@
       },
       {
         "label": "quick",
+        "create": false,
         "title": "ClipNest quick paste",
         "url": "index.html?window=quick",
         "width": 720,
